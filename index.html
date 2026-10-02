@@ -488,17 +488,14 @@
 
     <script>
         function goToStep(step) {
-            // 모든 스텝 숨기기
             for (let i = 1; i <= 5; i++) {
                 const panel = document.getElementById('step-' + i);
                 if (panel) panel.classList.remove('active');
             }
 
-            // 선택한 스텝만 보이기
             const targetPanel = document.getElementById('step-' + step);
             if (targetPanel) targetPanel.classList.add('active');
 
-            // 프로그레스 바 업데이트
             const stepNames = [
                 "상황 및 대상 설정",
                 "상대방이 한 말 입력",
