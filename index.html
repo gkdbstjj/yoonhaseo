@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko" class="dark">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DECODE - 학생을 위한 대화 암호 해독 및 갈등 해결 AI</title>
-    <!-- Tailwind CSS CDN -->
+    <title>DECODE - 학생을 위한 AI 갈등 해결사</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -12,620 +12,500 @@
             theme: {
                 extend: {
                     colors: {
-                        toss: {
-                            blue: '#3182f6',
-                            blueHover: '#1b64da',
-                            darkBg: '#090d16',
-                            cardBg: '#131927',
-                            cardHover: '#1a2235',
-                            border: '#1f293d',
-                            textMuted: '#8b95a1',
-                            textBright: '#f3f4f6',
-                            accentGreen: '#22c55e',
-                            accentPurple: '#a855f7'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'sans-serif']
+                        tossBlue: '#3182f6',
+                        tossBlueHover: '#1b64da',
+                        darkCard: '#1e2025',
+                        darkBg: '#101216',
+                        darkInput: '#2a2d34'
                     }
                 }
             }
         }
     </script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
         body {
-            font-family: 'Pretendard', sans-serif;
-            background-color: #090d16;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #101216;
             color: #f3f4f6;
-            letter-spacing: -0.02em;
+            -webkit-tap-highlight-color: transparent;
         }
-        .toss-card {
-            background-color: #131927;
-            border: 1px solid #1f293d;
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(12px);
+        .step-panel {
+            display: none;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: all 0.3s ease-out;
         }
-        .glow-effect {
-            box-shadow: 0 0 25px -5px rgba(49, 130, 246, 0.25);
+        .step-panel.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
         }
-        .pulse-subtle {
-            animation: pulseSubtle 2.5s infinite ease-in-out;
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
         }
-        @keyframes pulseSubtle {
-            0%, 100% { opacity: 0.9; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.01); }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e2025;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 9999px;
         }
     </style>
 </head>
-<body class="min-h-screen bg-[#090d16] text-gray-100 flex flex-col justify-between selection:bg-toss-blue selection:text-white">
+<body class="min-h-screen flex flex-col justify-between selection:bg-blue-600 selection:text-white">
 
-    <!-- Navbar -->
-    <header class="sticky top-0 z-50 backdrop-blur-md bg-[#090d16]/80 border-b border-toss-border/60 px-4 py-3 sm:px-8">
-        <div class="max-w-3xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2 cursor-pointer" onclick="resetToStep1()">
-                <div class="w-8 h-8 rounded-xl bg-toss-blue flex items-center flex-shrink-0 justify-center font-bold text-white shadow-lg shadow-toss-blue/30">
-                    <i class="fa-solid fa-code-merge text-sm"></i>
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-[#101216]/90 backdrop-blur-md border-b border-gray-800/80">
+        <div class="max-w-md mx-auto px-5 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2.5 cursor-pointer" onclick="goToStep(1)">
+                <div class="w-9 h-9 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-600/30">
+                    <i data-lucide="sparkles" class="w-5 h-5"></i>
                 </div>
-                <span class="font-extrabold text-xl tracking-tight text-white">DECODE</span>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-tight text-white">디코드 <span class="text-xs text-blue-400 font-normal ml-1">DECODE</span></h1>
+                    <p class="text-[11px] text-gray-400">속마음 해독 & 갈등 해결 AI</p>
+                </div>
             </div>
-            
-            <div class="flex items-center gap-3">
-                <button onclick="toggleSettingsModal()" class="text-xs text-toss-textMuted bg-toss-cardBg border border-toss-border hover:bg-toss-cardHover px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5">
-                    <i class="fa-solid fa-key text-toss-blue"></i>
-                    <span id="apiKeyStatusText">API 키 설정</span>
-                </button>
-            </div>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                학생 전용 F감성 AI
+            </span>
         </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="max-w-2xl mx-auto w-full px-4 py-6 sm:py-10 flex-grow">
-        
-        <!-- Progress Bar Indicator -->
-        <div id="progressContainer" class="mb-8">
-            <div class="flex justify-between text-xs text-toss-textMuted mb-2 font-medium">
-                <span id="stepLabelText" class="text-toss-blue font-semibold">STEP 1 / 4</span>
-                <span id="stepTitleText">상황 및 대상 선택</span>
+    <!-- Main Container -->
+    <main class="max-w-md mx-auto w-full px-5 py-6 flex-1 flex flex-col justify-center">
+
+        <!-- Progress Bar -->
+        <div id="progress-container" class="mb-6 space-y-2">
+            <div class="flex justify-between items-center text-xs">
+                <span id="step-badge" class="font-bold text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20">
+                    STEP 1 / 5
+                </span>
+                <span id="step-name" class="text-gray-400 font-medium">상황 및 대상 설정</span>
             </div>
-            <div class="w-full bg-toss-cardBg h-2 rounded-full overflow-hidden border border-toss-border/40">
-                <div id="progressBar" class="bg-toss-blue h-full w-1/4 transition-all duration-500 ease-out rounded-full shadow-sm shadow-toss-blue"></div>
+            <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
+                <div id="progress-bar" class="bg-blue-600 h-full w-[20%] transition-all duration-300 ease-out rounded-full"></div>
             </div>
         </div>
 
-        <!-- STEP 1: 관계 및 기본 상황 설정 -->
-        <section id="step1" class="space-y-6 transition-all duration-300">
-            <div class="space-y-2">
-                <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">누구와의 대화에서<br>마음이 상하셨나요?</h1>
-                <p class="text-toss-textMuted text-sm leading-relaxed">관계에 따라 속마음의 맥락과 감정의 깊이가 달라집니다.</p>
-            </div>
+        <!-- Card Wrapper -->
+        <div class="bg-[#1e2025] border border-gray-800/90 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
 
-            <!-- Relationship Selection Cards -->
-            <div class="grid grid-cols-2 gap-3 sm:gap-4">
-                <button type="button" onclick="selectRelation('parents')" class="relation-btn toss-card p-4 rounded-2xl text-left border border-toss-border hover:border-toss-blue/60 transition-all active:scale-[0.98] group relative overflow-hidden" data-value="parents">
-                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-house-chimney-user"></i>
+            <!-- STEP 1: 상대 정보 & 상황 입력 -->
+            <div id="step-1" class="step-panel active space-y-5">
+                <div class="space-y-1.5">
+                    <div class="inline-flex items-center gap-1.5 text-blue-400 text-xs font-semibold">
+                        <i data-lucide="users" class="w-4 h-4"></i> 누구와의 문제인가요?
                     </div>
-                    <div class="font-bold text-gray-100 mb-0.5">부모님</div>
-                    <div class="text-xs text-toss-textMuted">섭섭함, 잔소리, 서운함</div>
-                </button>
-
-                <button type="button" onclick="selectRelation('sibling')" class="relation-btn toss-card p-4 rounded-2xl text-left border border-toss-border hover:border-toss-blue/60 transition-all active:scale-[0.98] group relative overflow-hidden" data-value="sibling">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-people-arrows"></i>
-                    </div>
-                    <div class="font-bold text-gray-100 mb-0.5">형제 / 자매 / 남매</div>
-                    <div class="text-xs text-toss-textMuted">사소한 시비, 비교, 무시</div>
-                </button>
-
-                <button type="button" onclick="selectRelation('friend')" class="relation-btn toss-card p-4 rounded-2xl text-left border border-toss-border hover:border-toss-blue/60 transition-all active:scale-[0.98] group relative overflow-hidden" data-value="friend">
-                    <div class="w-10 h-10 rounded-xl bg-toss-blue/10 text-toss-blue flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-user-group"></i>
-                    </div>
-                    <div class="font-bold text-gray-100 mb-0.5">친구 / 절친</div>
-                    <div class="text-xs text-toss-textMuted">오해, 단톡방 갈등, 소외감</div>
-                </button>
-
-                <button type="button" onclick="selectRelation('lover')" class="relation-btn toss-card p-4 rounded-2xl text-left border border-toss-border hover:border-toss-blue/60 transition-all active:scale-[0.98] group relative overflow-hidden" data-value="lover">
-                    <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-heart"></i>
-                    </div>
-                    <div class="font-bold text-gray-100 mb-0.5">연인 / 이성친구</div>
-                    <div class="text-xs text-toss-textMuted">연락 문제, 표현 방식 차이</div>
-                </button>
-            </div>
-
-            <!-- Situation Summary Input -->
-            <div class="space-y-2 pt-2">
-                <label class="block text-sm font-semibold text-gray-200">어떤 일로 갈등이 생겼나요?</label>
-                <textarea id="situationInput" rows="3" class="w-full bg-toss-cardBg border border-toss-border rounded-2xl p-4 text-sm text-gray-100 placeholder-toss-textMuted focus:outline-none focus:border-toss-blue transition-all resize-none" placeholder="예: 시험기간인데 공부 안 하냐며 화를 내셨어요 / 약속 시간에 30분 늦어놓고 미안한 기색이 전혀 없었어요"></textarea>
-            </div>
-
-            <button onclick="goToStep(2)" class="w-full bg-toss-blue hover:bg-toss-blueHover text-white font-bold py-4 rounded-2xl shadow-lg shadow-toss-blue/25 transition-all duration-200 active:scale-[0.99] flex items-center justify-center gap-2">
-                <span>다음으로</span>
-                <i class="fa-solid fa-chevron-right text-xs"></i>
-            </button>
-        </section>
-
-        <!-- STEP 2: 상대방이 한 말/행동 입력 -->
-        <section id="step2" class="space-y-6 hidden transition-all duration-300">
-            <div class="space-y-2">
-                <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">상대방이 나에게 한<br>말이나 행동을 적어주세요</h1>
-                <p class="text-toss-textMuted text-sm leading-relaxed">상대방이 했던 구체적인 대화나 카톡 내용, 상황을 가감 없이 적어주세요.</p>
-            </div>
-
-            <div class="toss-card rounded-2xl p-4 space-y-3">
-                <div class="flex items-center gap-2 text-xs font-semibold text-toss-blue">
-                    <i class="fa-solid fa-quote-left"></i>
-                    <span>상대방의 대화 / 카톡 메시지</span>
+                    <h2 class="text-xl font-bold text-white">갈등 상황을 알려주세요</h2>
+                    <p class="text-xs text-gray-400 leading-relaxed">친구나 가족처럼 가까운 사람일수록 오해가 생기기 쉬워요.</p>
                 </div>
-                <textarea id="targetSpeechInput" rows="5" class="w-full bg-transparent border-0 text-sm sm:text-base text-gray-100 placeholder-toss-textMuted focus:outline-none resize-none" placeholder="&quot;너는 왜 매번 네 생각만 하냐? 진짜 이기적이다.&quot;&#10;&quot;너 알아서 해라. 이제 관여 안 할 테니까.&quot;"></textarea>
-            </div>
 
-            <div class="flex gap-3">
-                <button onclick="goToStep(1)" class="w-1/3 bg-toss-cardBg hover:bg-toss-cardHover border border-toss-border text-gray-300 font-semibold py-4 rounded-2xl transition-all">
-                    이전
-                </button>
-                <button onclick="goToStep(3)" class="w-2/3 bg-toss-blue hover:bg-toss-blueHover text-white font-bold py-4 rounded-2xl shadow-lg shadow-toss-blue/25 transition-all active:scale-[0.99] flex items-center justify-center gap-2">
-                    <span>다음으로</span>
-                    <i class="fa-solid fa-chevron-right text-xs"></i>
-                </button>
-            </div>
-        </section>
+                <div class="space-y-4">
+                    <!-- 관계 선택 -->
+                    <div>
+                        <label class="block text-xs font-medium text-gray-300 mb-2">상대방과의 관계</label>
+                        <div class="grid grid-cols-2 gap-2" id="relation-group">
+                            <button type="button" onclick="selectRelation(this, '부모님')" class="rel-btn py-2.5 px-3 rounded-2xl bg-[#2a2d34] text-gray-300 border border-gray-700/60 text-xs font-medium text-left flex items-center justify-between hover:border-blue-500/50">
+                                <span>👨‍👩‍👦 부모님 (엄마/아빠)</span>
+                            </button>
+                            <button type="button" onclick="selectRelation(this, '친한 친구')" class="rel-btn py-2.5 px-3 rounded-2xl bg-[#2a2d34] text-gray-300 border border-gray-700/60 text-xs font-medium text-left flex items-center justify-between hover:border-blue-500/50">
+                                <span>🏫 베프 / 반 친구</span>
+                            </button>
+                            <button type="button" onclick="selectRelation(this, '형제/자매')" class="rel-btn py-2.5 px-3 rounded-2xl bg-[#2a2d34] text-gray-300 border border-gray-700/60 text-xs font-medium text-left flex items-center justify-between hover:border-blue-500/50">
+                                <span>👫 형제 / 자매 / 남매</span>
+                            </button>
+                            <button type="button" onclick="selectRelation(this, '기타')" class="rel-btn py-2.5 px-3 rounded-2xl bg-[#2a2d34] text-gray-300 border border-gray-700/60 text-xs font-medium text-left flex items-center justify-between hover:border-blue-500/50">
+                                <span>💬 기타 관계</span>
+                            </button>
+                        </div>
+                        <input type="hidden" id="relation-val" value="부모님">
+                    </div>
 
-        <!-- STEP 3: 내 솔직한 감정 및 상태 체크 -->
-        <section id="step3" class="space-y-6 hidden transition-all duration-300">
-            <div class="space-y-2">
-                <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">그 말을 들었을 때<br>내 마음은 어땠나요?</h1>
-                <p class="text-toss-textMuted text-sm leading-relaxed">내 감정을 정확히 아는 것이 상처 극복의 첫걸음입니다. (다중 선택 가능)</p>
-            </div>
+                    <!-- 상대 성격/말투 -->
+                    <div>
+                        <label class="block text-xs font-medium text-gray-300 mb-1.5">상대방의 성격이나 평소 말투</label>
+                        <input type="text" id="target-personality" placeholder="예: 잔소리가 많음 / 욱하는 편 / 표현이 서툼 / 단답형" class="w-full bg-[#2a2d34] border border-gray-700/80 rounded-2xl px-4 py-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors">
+                    </div>
 
-            <!-- Emotion Pills Grid -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="emotionGrid">
-                <button type="button" onclick="toggleEmotion(this, '억울함/답답함')" class="emotion-chip toss-card py-3 px-4 rounded-xl text-xs sm:text-sm font-medium text-gray-300 border border-toss-border hover:border-toss-blue/40 text-center transition-all">
-                    😤 억울하고 답답함
-                </button>
-                <button type="button" onclick="toggleEmotion(this, '서운함/상처')" class="emotion-chip toss-card py-3 px-4 rounded-xl text-xs sm:text-sm font-medium text-gray-300 border border-toss-border hover:border-toss-blue/40 text-center transition-all">
-                    😢 상처받고 서운함
-                </button>
-                <button type="button" onclick="toggleEmotion(this, '화남/분노')" class="emotion-chip toss-card py-3 px-4 rounded-xl text-xs sm:text-sm font-medium text-gray-300 border border-toss-border hover:border-toss-blue/40 text-center transition-all">
-                    🔥 치밀어 오르는 화
-                </button>
-                <button type="button" onclick="toggleEmotion(this, '죄책감/미안함')" class="emotion-chip toss-card py-3 px-4 rounded-xl text-xs sm:text-sm font-medium text-gray-300 border border-toss-border hover:border-toss-blue/40 text-center transition-all">
-                    🥺 내가 잘못했나 싶은 마음
-                </button>
-                <button type="button" onclick="toggleEmotion(this, '배신감/허탈함')" class="emotion-chip toss-card py-3 px-4 rounded-xl text-xs sm:text-sm font-medium text-gray-300 border border-toss-border hover:border-toss-blue/40 text-center transition-all">
-                    🥀 허탈함과 배신감
-                </button>
-                <button type="button" onclick="toggleEmotion(this, '막막함/손절하고싶음')" class="emotion-chip toss-card py-3 px-4 rounded-xl text-xs sm:text-sm font-medium text-gray-300 border border-toss-border hover:border-toss-blue/40 text-center transition-all">
-                    🛑 관계를 포기하고 싶음
+                    <!-- 갈등 상황 -->
+                    <div>
+                        <label class="block text-xs font-medium text-gray-300 mb-1.5">어떤 일로 갈등이 생겼나요?</label>
+                        <textarea id="situation" rows="3" placeholder="예: 성적이나 휴대폰 문제로 엄마랑 다퉜어요. / 친구가 약속을 갑자기 취소해놓고 미안한 기색이 없어서 화났어요." class="w-full bg-[#2a2d34] border border-gray-700/80 rounded-2xl p-3.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors resize-none"></textarea>
+                    </div>
+                </div>
+
+                <button onclick="goToStep(2)" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3.5 rounded-2xl text-sm transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-1.5">
+                    다음: 상대방이 한 말 적기 <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </button>
             </div>
 
-            <!-- Additional Detail Input -->
-            <div class="space-y-2 pt-2">
-                <label class="block text-sm font-semibold text-gray-200">내가 정말 원했던 상대방의 모습은?</label>
-                <input type="text" id="myGoalInput" class="w-full bg-toss-cardBg border border-toss-border rounded-2xl p-4 text-sm text-gray-100 placeholder-toss-textMuted focus:outline-none focus:border-toss-blue transition-all" placeholder="예: 내 심정을 조금이라도 물어봐주고 이해해주는 것">
-            </div>
+            <!-- STEP 2: 상대방의 말 입력 -->
+            <div id="step-2" class="step-panel space-y-5">
+                <div class="space-y-1.5">
+                    <div class="inline-flex items-center gap-1.5 text-blue-400 text-xs font-semibold">
+                        <i data-lucide="message-square" class="w-4 h-4"></i> 대화 암호화 추출
+                    </div>
+                    <h2 class="text-xl font-bold text-white">상대방이 뭐라고 했나요?</h2>
+                    <p class="text-xs text-gray-400 leading-relaxed">카톡 메시지나 직접 들었던 날카로운 말을 있는 그대로 적어주세요.</p>
+                </div>
 
-            <div class="flex gap-3">
-                <button onclick="goToStep(2)" class="w-1/3 bg-toss-cardBg hover:bg-toss-cardHover border border-toss-border text-gray-300 font-semibold py-4 rounded-2xl transition-all">
-                    이전
-                </button>
-                <button onclick="startDecoding()" class="w-2/3 bg-toss-blue hover:bg-toss-blueHover text-white font-bold py-4 rounded-2xl shadow-lg shadow-toss-blue/30 transition-all active:scale-[0.99] flex items-center justify-center gap-2 glow-effect">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>심리 해독 시작하기</span>
-                </button>
-            </div>
-        </section>
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1.5">상대가 했던 말 (또는 카톡 내용)</label>
+                    <textarea id="target-words" rows="5" placeholder="예: '됐어, 너 편할 대로 해라.' / '내가 너한테 뭘 더 바래?' / '너는 매번 그런 식이야, 읽씹하지 마.'" class="w-full bg-[#2a2d34] border border-gray-700/80 rounded-2xl p-3.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors resize-none"></textarea>
+                </div>
 
-        <!-- STEP 4: 로딩 화면 -->
-        <section id="step4" class="hidden text-center py-16 space-y-6">
-            <div class="relative w-24 h-24 mx-auto flex items-center justify-center">
-                <div class="absolute inset-0 rounded-full border-4 border-toss-blue/20 border-t-toss-blue animate-spin"></div>
-                <div class="w-12 h-12 rounded-2xl bg-toss-blue/10 text-toss-blue flex items-center justify-center text-xl pulse-subtle">
-                    <i class="fa-solid fa-brain"></i>
+                <div class="flex gap-2.5">
+                    <button onclick="goToStep(1)" class="w-1/3 bg-[#2a2d34] hover:bg-gray-700 text-gray-300 font-medium py-3.5 rounded-2xl text-sm transition-all border border-gray-700/50">이전</button>
+                    <button onclick="goToStep(3)" class="w-2/3 bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3.5 rounded-2xl text-sm transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-1.5">
+                        다음: 내 감정 말하기 <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
                 </div>
             </div>
 
-            <div class="space-y-2">
-                <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight" id="loadingTitle">대화의 숨은 암호를 해독하고 있습니다...</h2>
-                <p class="text-toss-textMuted text-xs sm:text-sm" id="loadingSubtitle">상대방의 방어기제와 심리적 메커니즘을 다각도로 분석 중입니다.</p>
-            </div>
-
-            <div class="max-w-xs mx-auto toss-card p-3 rounded-xl border border-toss-border/50 text-xs text-toss-textMuted flex items-center justify-center gap-2">
-                <i class="fa-solid fa-circle-info text-toss-blue"></i>
-                <span>상투적인 조언 대신 현실적인 대처를 제시합니다.</span>
-            </div>
-        </section>
-
-        <!-- STEP 5: 최종 분석 및 솔루션 결과 보고서 -->
-        <section id="step5" class="space-y-6 hidden">
-            <!-- Header Tag -->
-            <div class="flex items-center justify-between">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-toss-blue/10 text-toss-blue border border-toss-blue/20">
-                    <i class="fa-solid fa-shield-halved"></i> 심리 해독 리포트 Complete
-                </span>
-                <button onclick="resetToStep1()" class="text-xs text-toss-textMuted hover:text-white transition-colors flex items-center gap-1">
-                    <i class="fa-solid fa-rotate-right"></i> 다시 해독하기
-                </button>
-            </div>
-
-            <!-- Warm Empathy Header Card -->
-            <div class="toss-card rounded-3xl p-6 border border-toss-border relative overflow-hidden bg-gradient-to-br from-[#131927] to-[#1a233a]">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-toss-blue/5 rounded-full blur-2xl"></div>
-                <div class="flex items-start gap-4">
-                    <div class="w-10 h-10 rounded-2xl bg-toss-blue/20 text-toss-blue flex items-center justify-center text-lg flex-shrink-0 mt-1">
-                        <i class="fa-solid fa-heart text-toss-blue"></i>
+            <!-- STEP 3: 나의 감정 상태 -->
+            <div id="step-3" class="step-panel space-y-5">
+                <div class="space-y-1.5">
+                    <div class="inline-flex items-center gap-1.5 text-blue-400 text-xs font-semibold">
+                        <i data-lucide="heart" class="w-4 h-4"></i> 감정 케어 (F 감성)
                     </div>
-                    <div class="space-y-2">
-                        <h2 class="text-lg font-bold text-white">당신만을 위한 공감과 위로</h2>
-                        <p id="resultEmpathy" class="text-sm text-gray-300 leading-relaxed font-normal">
-                            <!-- Populated dynamically -->
-                        </p>
+                    <h2 class="text-xl font-bold text-white">지금 솔직한 마음이 어때요?</h2>
+                    <p class="text-xs text-gray-400 leading-relaxed">AI가 당신의 감정을 완전히 이해하고 솔루션을 만들어 줄게요.</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-300 mb-2">가장 크게 느끼는 감정 (선택)</label>
+                        <div class="grid grid-cols-2 gap-2" id="emotion-group">
+                            <button type="button" onclick="selectEmotion(this, '억울하고 서운함')" class="emo-btn p-3 rounded-2xl bg-[#2a2d34] text-gray-300 border border-gray-700/60 text-xs font-medium text-left hover:border-blue-500/50">
+                                😔 억울하고 서운해
+                            </button>
+                            <button type="button" onclick="selectEmotion(this, '답답하고 화가 남')" class="emo-btn p-3 rounded-2xl bg-[#2a2d34] text-gray-300 border border-gray-700/60 text-xs font-medium text-left hover:border-blue-500/50">
+                                😤 답답하고 화가 나
+                            </button>
+                            <button type="button" onclick="selectEmotion(this, '미안하고 마음이 불편함')" class="emo-btn p-3 rounded-2xl bg-[#2a2d34] text-gray-300 border border-gray-700/60 text-xs font-medium text-left hover:border-blue-500/50">
+                                🥺 미안해서 마음이 무거워
+                            </button>
+                            <button type="button" onclick="selectEmotion(this, '관계가 틀어질까 봐 불안함')" class="emo-btn p-3 rounded-2xl bg-[#2a2d34] text-gray-300 border border-gray-700/60 text-xs font-medium text-left hover:border-blue-500/50">
+                                😨 멀어질까 봐 걱정돼
+                            </button>
+                        </div>
+                        <input type="hidden" id="emotion-val" value="억울하고 서운함">
                     </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-300 mb-1.5">더 하고 싶은 말이 있다면? (선택)</label>
+                        <textarea id="my-feeling-detail" rows="2" placeholder="예: 일부러 그런 게 아닌데 내 진심을 몰라줘서 눈물 나요." class="w-full bg-[#2a2d34] border border-gray-700/80 rounded-2xl p-3.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors resize-none"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex gap-2.5">
+                    <button onclick="goToStep(2)" class="w-1/3 bg-[#2a2d34] hover:bg-gray-700 text-gray-300 font-medium py-3.5 rounded-2xl text-sm transition-all border border-gray-700/50">이전</button>
+                    <button onclick="runDecode()" class="w-2/3 bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3.5 rounded-2xl text-sm transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-1.5">
+                        <i data-lucide="key" class="w-4 h-4"></i> 대화 암호 해독하기
+                    </button>
                 </div>
             </div>
 
-            <!-- Deep Psychology Analysis -->
-            <div class="toss-card rounded-3xl p-6 border border-toss-border space-y-4">
-                <div class="flex items-center gap-2 border-b border-toss-border/60 pb-3">
-                    <i class="fa-solid fa-magnifying-glass-chart text-toss-accentPurple"></i>
-                    <h3 class="font-bold text-white text-base">상대방의 진짜 속마음 & 방어기제</h3>
-                </div>
-                <div class="space-y-3">
-                    <div class="bg-toss-darkBg/60 rounded-2xl p-4 border border-toss-border/40">
-                        <div class="text-xs font-semibold text-toss-accentPurple mb-1" id="resultDefenseMechanism">방어기제: 인정 욕구와 결핍</div>
-                        <p id="resultHiddenMind" class="text-sm text-gray-300 leading-relaxed">
-                            <!-- Populated dynamically -->
-                        </p>
+            <!-- STEP 4: AI 해독 중 (Loading) -->
+            <div id="step-4" class="step-panel py-10 text-center space-y-6">
+                <div class="relative w-20 h-20 mx-auto">
+                    <div class="absolute inset-0 rounded-full bg-blue-600/20 animate-ping"></div>
+                    <div class="relative w-20 h-20 rounded-full bg-blue-600/30 border border-blue-500/50 flex items-center justify-center text-blue-400">
+                        <i data-lucide="cpu" class="w-10 h-10 animate-pulse"></i>
                     </div>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="text-xl font-bold text-white">상대방의 마음을 해독하는 중...</h3>
+                    <p class="text-xs text-gray-400">말 뒤에 숨은 심리와 속뜻을 깊이 분석하고 있어요.</p>
+                </div>
+                <div class="max-w-xs mx-auto bg-[#2a2d34] p-4 rounded-2xl border border-gray-700/60 text-left font-mono text-[11px] text-gray-400 space-y-1.5">
+                    <p class="text-blue-400">> 관계 맥락 및 성격 패턴 수집 중...</p>
+                    <p class="text-blue-400">> 겉으로 표현된 공격성/무관심 해체 중...</p>
+                    <p class="text-blue-400">> 학생 사용자의 감정 상태 공감 모드 가동...</p>
+                    <p class="text-blue-400">> 최적의 3가지 솔루션 스크립트 작성 중...</p>
                 </div>
             </div>
 
-            <!-- Real Action Choices (3 Options) -->
-            <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                    <h3 class="font-bold text-white text-base flex items-center gap-2">
-                        <i class="fa-solid fa-comments text-toss-blue"></i>
-                        <span>상황별 최적의 대화 대처법 3가지</span>
+            <!-- STEP 5: 해독 결과 리스트 -->
+            <div id="step-5" class="step-panel space-y-6">
+                <!-- 1. F감성 공감 한마디 -->
+                <div class="bg-blue-950/40 border border-blue-800/50 rounded-2xl p-4 space-y-2">
+                    <div class="flex items-center gap-1.5 text-blue-400 text-xs font-bold">
+                        <i data-lucide="heart-handshake" class="w-4 h-4"></i> AI의 공감과 위로
+                    </div>
+                    <p id="res-empathy" class="text-xs text-gray-200 leading-relaxed font-medium"></p>
+                </div>
+
+                <!-- 2. 상황 핵심 정리 -->
+                <div class="space-y-2">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i data-lucide="file-text" class="w-3.5 h-3.5 text-blue-400"></i> 상황 요약 및 갈등 쟁점
                     </h3>
-                    <span class="text-xs text-toss-textMuted">상황에 맞게 선택하세요</span>
+                    <div id="res-summary" class="bg-[#2a2d34] p-4 rounded-2xl border border-gray-700/60 text-xs text-gray-300 leading-relaxed"></div>
                 </div>
 
-                <!-- Option A: Empathy & Apology -->
-                <div class="toss-card rounded-3xl p-5 border border-toss-border hover:border-toss-blue/50 transition-all space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-                            TYPE A. 공감 & 부드러운 사과형
-                        </span>
-                        <button onclick="copyToClipboard('textOptionA')" class="text-xs text-toss-textMuted hover:text-toss-blue flex items-center gap-1 transition-colors">
-                            <i class="fa-regular fa-copy"></i> 복사하기
-                        </button>
-                    </div>
-                    <p class="text-xs text-toss-textMuted" id="descOptionA">상대와의 관계 유지가 우선이고 갈등을 빠르게 완화하고 싶을 때</p>
-                    <div class="bg-toss-darkBg/80 p-4 rounded-2xl text-sm text-gray-200 leading-relaxed border border-toss-border/30 font-mono" id="textOptionA">
-                        <!-- Populated dynamically -->
+                <!-- 3. 상대방 말의 진짜 속뜻 해독 -->
+                <div class="space-y-2">
+                    <h3 class="text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i data-lucide="unlock" class="w-3.5 h-3.5"></i> 상대방의 진짜 속뜻 (Decode)
+                    </h3>
+                    <div class="bg-gradient-to-b from-[#2a2d34] to-[#1f2228] p-4.5 rounded-2xl border border-blue-500/30 space-y-2">
+                        <div class="text-[11px] text-gray-400 italic bg-black/30 p-2.5 rounded-xl border border-gray-800">
+                            상대가 한 말: "<span id="res-target-words"></span>"
+                        </div>
+                        <p id="res-real-meaning" class="text-xs text-blue-100 font-medium leading-relaxed pt-1"></p>
                     </div>
                 </div>
 
-                <!-- Option B: Honest Boundary Setting -->
-                <div class="toss-card rounded-3xl p-5 border border-toss-border hover:border-toss-blue/50 transition-all space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-toss-blue bg-toss-blue/10 px-2.5 py-1 rounded-lg border border-toss-blue/20">
-                            TYPE B. 솔직한 감정표현 & 경계설정형
-                        </span>
-                        <button onclick="copyToClipboard('textOptionB')" class="text-xs text-toss-textMuted hover:text-toss-blue flex items-center gap-1 transition-colors">
-                            <i class="fa-regular fa-copy"></i> 복사하기
-                        </button>
+                <!-- 4. 추천 대화 스크립트 3가지 -->
+                <div class="space-y-3">
+                    <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i data-lucide="message-circle-plus" class="w-3.5 h-3.5"></i> 이렇게 답변해보세요 (답변 선택)
+                    </h3>
+
+                    <!-- Option 1 -->
+                    <div class="bg-[#2a2d34] p-4 rounded-2xl border border-gray-700/70 space-y-2 relative group">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                                💡 1. 솔직하고 부드러운 공감형
+                            </span>
+                            <button onclick="copyText('res-reply-1')" class="text-[11px] text-gray-400 hover:text-white bg-gray-800 px-2 py-1 rounded-lg border border-gray-700 transition-colors flex items-center gap-1">
+                                <i data-lucide="copy" class="w-3 h-3"></i> 복사
+                            </button>
+                        </div>
+                        <p id="res-reply-1" class="text-xs text-gray-200 leading-relaxed font-mono pt-1"></p>
                     </div>
-                    <p class="text-xs text-toss-textMuted" id="descOptionB">상처받은 내 감정을 전달하면서도 무례하지 않게 경계를 세우고 싶을 때</p>
-                    <div class="bg-toss-darkBg/80 p-4 rounded-2xl text-sm text-gray-200 leading-relaxed border border-toss-border/30 font-mono" id="textOptionB">
-                        <!-- Populated dynamically -->
+
+                    <!-- Option 2 -->
+                    <div class="bg-[#2a2d34] p-4 rounded-2xl border border-gray-700/70 space-y-2 relative group">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[11px] font-bold text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20">
+                                🎯 2. 내 오해를 푸는 솔직담백형
+                            </span>
+                            <button onclick="copyText('res-reply-2')" class="text-[11px] text-gray-400 hover:text-white bg-gray-800 px-2 py-1 rounded-lg border border-gray-700 transition-colors flex items-center gap-1">
+                                <i data-lucide="copy" class="w-3 h-3"></i> 복사
+                            </button>
+                        </div>
+                        <p id="res-reply-2" class="text-xs text-gray-200 leading-relaxed font-mono pt-1"></p>
+                    </div>
+
+                    <!-- Option 3 -->
+                    <div class="bg-[#2a2d34] p-4 rounded-2xl border border-gray-700/70 space-y-2 relative group">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[11px] font-bold text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
+                                🌿 3. 부담을 낮추는 화해 제안형
+                            </span>
+                            <button onclick="copyText('res-reply-3')" class="text-[11px] text-gray-400 hover:text-white bg-gray-800 px-2 py-1 rounded-lg border border-gray-700 transition-colors flex items-center gap-1">
+                                <i data-lucide="copy" class="w-3 h-3"></i> 복사
+                            </button>
+                        </div>
+                        <p id="res-reply-3" class="text-xs text-gray-200 leading-relaxed font-mono pt-1"></p>
                     </div>
                 </div>
 
-                <!-- Option C: Gentle Conversation Request -->
-                <div class="toss-card rounded-3xl p-5 border border-toss-border hover:border-toss-blue/50 transition-all space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
-                            TYPE C. 부담 없는 대화 재요청형
-                        </span>
-                        <button onclick="copyToClipboard('textOptionC')" class="text-xs text-toss-textMuted hover:text-toss-blue flex items-center gap-1 transition-colors">
-                            <i class="fa-regular fa-copy"></i> 복사하기
+                <!-- 5. 내가 직접 결정하는 방향성 -->
+                <div class="bg-[#2a2d34] p-4.5 rounded-2xl border border-gray-700/80 space-y-3">
+                    <h3 class="text-xs font-bold text-purple-400 flex items-center gap-1.5">
+                        <i data-lucide="compass" class="w-4 h-4"></i> 앞으로의 방향성 결정하기
+                    </h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">
+                        갈등을 해결할 준비가 되셨나요? 원하는 조언 방식을 선택하고 행동으로 옮겨보세요.
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <button onclick="chooseDirection('send')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs py-2.5 rounded-xl font-medium transition-all shadow-md">
+                            답장 보내고 대화하기
+                        </button>
+                        <button onclick="chooseDirection('wait')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2.5 rounded-xl font-medium transition-all border border-gray-700">
+                            잠시 생각할 시간 갖기
                         </button>
                     </div>
-                    <p class="text-xs text-toss-textMuted" id="descOptionC">당장 답하기 어색하거나 감정이 진정된 후 차분하게 다시 얘기하고 싶을 때</p>
-                    <div class="bg-toss-darkBg/80 p-4 rounded-2xl text-sm text-gray-200 leading-relaxed border border-toss-border/30 font-mono" id="textOptionC">
-                        <!-- Populated dynamically -->
-                    </div>
                 </div>
+
+                <!-- Reset Button -->
+                <button onclick="resetApp()" class="w-full bg-[#2a2d34] hover:bg-gray-800 text-gray-300 py-3 rounded-2xl text-xs font-medium border border-gray-700/80 transition-all flex items-center justify-center gap-1.5">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 다른 갈등 상황 해독하기
+                </button>
             </div>
 
-            <!-- Golden Rule Tip -->
-            <div class="bg-toss-cardBg border border-toss-border rounded-2xl p-4 flex items-start gap-3">
-                <i class="fa-solid fa-lightbulb text-amber-400 text-lg mt-0.5"></i>
-                <div class="text-xs text-toss-textMuted leading-relaxed">
-                    <strong class="text-gray-200 block mb-0.5">대화 솔루션 팁</strong>
-                    텍스트를 그대로 복사해서 카톡으로 전달하거나, 마음을 정돈한 후 실제 대화 시 핵심 문장을 활용해 보세요. 상대방의 감정 변화에 따라 능동적으로 대처할 수 있습니다.
-                </div>
-            </div>
-        </section>
-
+        </div>
     </main>
 
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-2.5 rounded-full text-xs font-medium shadow-2xl transition-all duration-300 opacity-0 pointer-events-none z-50 flex items-center gap-1.5">
+        <i data-lucide="check-circle" class="w-4 h-4"></i> 클립보드에 복사되었습니다!
+    </div>
+
     <!-- Footer -->
-    <footer class="border-t border-toss-border/40 py-6 text-center text-xs text-toss-textMuted">
-        <div class="max-w-2xl mx-auto px-4 space-y-1">
-            <p>DECODE - 학생 심리 갈등 해결 지원 서비스</p>
-            <p class="text-[11px] opacity-70">모든 분석은 개인 맞춤형 심리학 알고리즘 및 AI 모델을 바탕으로 제공됩니다.</p>
-        </div>
+    <footer class="py-5 text-center text-[11px] text-gray-500 border-t border-gray-800/60">
+        <p>© DECODE - AI 대화 해독 및 관계 회복 도우미</p>
     </footer>
 
-    <!-- API Key Settings Modal -->
-    <div id="settingsModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="toss-card rounded-3xl max-w-md w-full p-6 space-y-5 border border-toss-border shadow-2xl">
-            <div class="flex justify-between items-center">
-                <h3 class="font-bold text-lg text-white flex items-center gap-2">
-                    <i class="fa-solid fa-key text-toss-blue"></i> Gemini API 키 설정
-                </h3>
-                <button onclick="toggleSettingsModal()" class="text-toss-textMuted hover:text-white text-lg">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <p class="text-xs text-toss-textMuted leading-relaxed">
-                Google Gemini API 키를 등록하면 AI 실시간 고도화 해독 기능을 이용할 수 있습니다. 
-                <br><span class="text-toss-blue font-semibold">키가 없어도 고도화된 정밀 시뮬레이션 알고리즘으로 정상 이용 가능합니다.</span>
-            </p>
-
-            <div class="space-y-2">
-                <label class="text-xs font-semibold text-gray-300">API Key 입력</label>
-                <input type="password" id="apiKeyInput" class="w-full bg-toss-darkBg border border-toss-border rounded-xl p-3 text-xs text-white placeholder-toss-textMuted focus:outline-none focus:border-toss-blue" placeholder="AIzaSy...">
-            </div>
-
-            <div class="flex gap-2 justify-end pt-2">
-                <button onclick="saveApiKey()" class="w-full bg-toss-blue hover:bg-toss-blueHover text-white font-bold py-3 rounded-xl text-xs transition-all">
-                    저장하기
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-toss-cardBg border border-toss-blue text-white px-5 py-3 rounded-full text-xs font-medium shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center gap-2">
-        <i class="fa-solid fa-circle-check text-toss-blue"></i>
-        <span id="toastMessage">클립보드에 복사되었습니다.</span>
-    </div>
-
+    <!-- JavaScript Application Logic -->
     <script>
-        // Global Application State
-        const state = {
-            step: 1,
-            relation: '',
-            situation: '',
-            targetSpeech: '',
-            emotions: [],
-            myGoal: '',
-            apiKey: localStorage.getItem('decode_gemini_key') || ''
-        };
+        lucide.createIcons();
 
-        // Initialize UI State
-        document.addEventListener('DOMContentLoaded', () => {
-            updateApiKeyUI();
-        });
+        let currentStep = 1;
 
-        function toggleSettingsModal() {
-            const modal = document.getElementById('settingsModal');
-            modal.classList.toggle('hidden');
-            if (!modal.classList.contains('hidden')) {
-                document.getElementById('apiKeyInput').value = state.apiKey;
-            }
-        }
+        // UI Step Control
+        function goToStep(step) {
+            currentStep = step;
 
-        function saveApiKey() {
-            const val = document.getElementById('apiKeyInput').value.trim();
-            state.apiKey = val;
-            if (val) {
-                localStorage.setItem('decode_gemini_key', val);
-                showToast('Gemini API 키가 저장되었습니다.');
-            } else {
-                localStorage.removeItem('decode_gemini_key');
-                showToast('API 키가 제거되었습니다. 시뮬레이션 모드로 동작합니다.');
-            }
-            updateApiKeyUI();
-            toggleSettingsModal();
-        }
-
-        function updateApiKeyUI() {
-            const label = document.getElementById('apiKeyStatusText');
-            if (state.apiKey) {
-                label.innerText = 'API 연동 완료';
-                label.classList.add('text-toss-blue', 'font-semibold');
-            } else {
-                label.innerText = 'API 키 설정';
-                label.classList.remove('text-toss-blue', 'font-semibold');
-            }
-        }
-
-        function selectRelation(val) {
-            state.relation = val;
-            document.querySelectorAll('.relation-btn').forEach(btn => {
-                if (btn.dataset.value === val) {
-                    btn.classList.add('border-toss-blue', 'bg-toss-cardHover', 'ring-2', 'ring-toss-blue/30');
-                } else {
-                    btn.classList.remove('border-toss-blue', 'bg-toss-cardHover', 'ring-2', 'ring-toss-blue/30');
-                }
+            document.querySelectorAll('.step-panel').forEach(panel => {
+                panel.classList.remove('active');
             });
-        }
+            document.getElementById(`step-${step}`).classList.add('active');
 
-        function toggleEmotion(btn, emotion) {
-            if (state.emotions.includes(emotion)) {
-                state.emotions = state.emotions.filter(e => e !== emotion);
-                btn.classList.remove('border-toss-blue', 'bg-toss-blue/20', 'text-white');
-            } else {
-                state.emotions.push(emotion);
-                btn.classList.add('border-toss-blue', 'bg-toss-blue/20', 'text-white');
-            }
-        }
+            const stepNames = [
+                "상황 및 대상 설정",
+                "상대방이 한 말 입력",
+                "나의 감정 상태 확인",
+                "AI 심리 분석 중",
+                "해독 리스트 및 최적 답안"
+            ];
 
-        function goToStep(stepNum) {
-            // Validation step by step
-            if (stepNum === 2) {
-                if (!state.relation) {
-                    showToast('누구와의 갈등인지 선택해 주세요.');
-                    return;
-                }
-                state.situation = document.getElementById('situationInput').value.trim();
-                if (!state.situation) {
-                    showToast('상황을 간략히 적어주세요.');
-                    return;
-                }
-            }
-
-            if (stepNum === 3) {
-                state.targetSpeech = document.getElementById('targetSpeechInput').value.trim();
-                if (!state.targetSpeech) {
-                    showToast('상대방이 한 말을 적어주세요.');
-                    return;
-                }
-            }
-
-            // Hide all steps
-            for (let i = 1; i <= 5; i++) {
-                const el = document.getElementById(`step${i}`);
-                if (el) el.classList.add('hidden');
-            }
-
-            // Show target step
-            const targetEl = document.getElementById(`step${stepNum}`);
-            if (targetEl) targetEl.classList.remove('hidden');
-
-            // Update Progress Bar
-            state.step = stepNum;
-            const progressContainer = document.getElementById('progressContainer');
-            if (stepNum === 5) {
-                progressContainer.classList.add('hidden');
-            } else {
-                progressContainer.classList.remove('hidden');
-                const progressBar = document.getElementById('progressBar');
-                const stepLabelText = document.getElementById('stepLabelText');
-                const stepTitleText = document.getElementById('stepTitleText');
-
-                const percent = (stepNum / 4) * 100;
-                progressBar.style.width = `${percent}%`;
-                stepLabelText.innerText = `STEP ${stepNum} / 4`;
-
-                const titles = {
-                    1: '상황 및 대상 선택',
-                    2: '상대방의 말/행동 기록',
-                    3: '내 감정 상태 확인',
-                    4: 'AI 해독 분석 중'
-                };
-                stepTitleText.innerText = titles[stepNum] || '';
-            }
+            document.getElementById('step-badge').innerText = `STEP ${step} / 5`;
+            document.getElementById('step-name').innerText = stepNames[step - 1];
+            document.getElementById('progress-bar').style.width = `${(step / 5) * 100}%`;
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function resetToStep1() {
-            state.step = 1;
-            state.relation = '';
-            state.situation = '';
-            state.targetSpeech = '';
-            state.emotions = [];
-            state.myGoal = '';
-
-            document.querySelectorAll('.relation-btn').forEach(btn => {
-                btn.classList.remove('border-toss-blue', 'bg-toss-cardHover', 'ring-2', 'ring-toss-blue/30');
+        // Button Selector Functions
+        function selectRelation(btn, value) {
+            document.querySelectorAll('.rel-btn').forEach(b => {
+                b.classList.remove('border-blue-500', 'bg-blue-600/20', 'text-white');
+                b.classList.add('bg-[#2a2d34]', 'text-gray-300');
             });
-            document.querySelectorAll('.emotion-chip').forEach(btn => {
-                btn.classList.remove('border-toss-blue', 'bg-toss-blue/20', 'text-white');
-            });
-
-            document.getElementById('situationInput').value = '';
-            document.getElementById('targetSpeechInput').value = '';
-            document.getElementById('myGoalInput').value = '';
-
-            goToStep(1);
+            btn.classList.remove('bg-[#2a2d34]', 'text-gray-300');
+            btn.classList.add('border-blue-500', 'bg-blue-600/20', 'text-white');
+            document.getElementById('relation-val').value = value;
         }
 
-        async function startDecoding() {
-            state.myGoal = document.getElementById('myGoalInput').value.trim();
+        function selectEmotion(btn, value) {
+            document.querySelectorAll('.emo-btn').forEach(b => {
+                b.classList.remove('border-blue-500', 'bg-blue-600/20', 'text-white');
+                b.classList.add('bg-[#2a2d34]', 'text-gray-300');
+            });
+            btn.classList.remove('bg-[#2a2d34]', 'text-gray-300');
+            btn.classList.add('border-blue-500', 'bg-blue-600/20', 'text-white');
+            document.getElementById('emotion-val').value = value;
+        }
+
+        // Copy Text Helper
+        function copyText(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("복사되었습니다! 카톡이나 메시지로 전달해보세요.");
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+
+        // Run Analysis Logic
+        function runDecode() {
+            const targetWords = document.getElementById('target-words').value.trim();
+            if (!targetWords) {
+                alert("상대방이 했던 말이나 메시지를 입력해주세요!");
+                goToStep(2);
+                return;
+            }
+
             goToStep(4);
 
-            if (state.apiKey) {
-                try {
-                    await fetchGeminiAnalysis();
-                } catch (err) {
-                    console.warn('Gemini API 호출 실패, 시뮬레이션 알고리즘으로 전환합니다.', err);
-                    runFallbackSimulation();
-                }
+            // Simulate AI Analysis (2.2 seconds)
+            setTimeout(() => {
+                generateResults();
+                goToStep(5);
+            }, 2200);
+        }
+
+        // Advanced Fallback & Result Generation Engine
+        function generateResults() {
+            const relation = document.getElementById('relation-val').value;
+            const personality = document.getElementById('target-personality').value.trim() || "성향 미입력";
+            const situation = document.getElementById('situation').value.trim() || "갈등 상황";
+            const targetWords = document.getElementById('target-words').value.trim();
+            const emotion = document.getElementById('emotion-val').value;
+            const feelingDetail = document.getElementById('my-feeling-detail').value.trim();
+
+            document.getElementById('res-target-words').innerText = targetWords;
+
+            // 1. F-Style Empathy
+            document.getElementById('res-empathy').innerText = 
+                `가장 가까운 ${relation} 관계에서 이런 말을 들어서 마음이 많이 아프고 ${emotion} 상태였겠어요. 진심을 오해받는 것 같아 속상하겠지만, 마음을 가다듬고 상대방의 숨겨진 심리를 같이 들여다볼게요.`;
+
+            // 2. Situation Summary
+            document.getElementById('res-summary').innerHTML = 
+                `<b class="text-white">갈등 맥락:</b> ${relation} 관계에서 '${situation}' 문제로 발생한 마찰.<br>` +
+                `<b class="text-white">상대 성향:</b> ${personality}<br>` +
+                `<b class="text-white">사용자 감정:</b> ${emotion} ${feelingDetail ? `(${feelingDetail})` : ''}`;
+
+            // 3. Real Meaning Decode
+            if (relation === "부모님") {
+                document.getElementById('res-real-meaning').innerText = 
+                    `부모님이 하신 "${targetWords}"라는 표현은 단순히 비난하려는 게 아니라, 자녀가 잘되기를 바라는 마음과 통제력 상실에서 오는 '불안감 및 서운함'의 다른 표현입니다. 부모님 본인도 세대 차이와 대화법 부재로 어떻게 진심을 전달할지 몰라 서툴게 표현된 상태입니다.`;
+                
+                document.getElementById('res-reply-1').innerText = 
+                    `"엄마/아빠, 아까 하신 말씀 들었을 때 내 진심을 몰라주시는 것 같아서 조금 서운했어요. 하지만 절 걱정해서 하신 말씀인 거 알고 있어요. 다음부터는 제 생각도 들어주시면 좋겠어요."`;
+                document.getElementById('res-reply-2').innerText = 
+                    `"제가 감정적으로 굴어서 죄송해요. 일부러 부모님 속상하게 하려던 건 아니었어요. 제 입장에 대해서 차근차근 다시 말씀드려도 될까요?"`;
+                document.getElementById('res-reply-3').innerText = 
+                    `"서로 기분 상한 상태에서 얘기하면 다툴 것 같아요. 저도 생각 정리해서 말씀드릴 테니 부모님도 마음 가라앉히시고 나중에 다시 얘기해요."`;
+
+            } else if (relation === "친한 친구") {
+                document.getElementById('res-real-meaning').innerText = 
+                    `친구의 "${targetWords}"라는 말은 관계를 끊자는 뜻이 아니라, 본인의 기대나 감정이 무시당했다고 느껴서 스스로를 보호하기 위해 나오는 '방어 기제'입니다. 자존심 때문에 차갑게 말하지만 내심 관계가 회복되기를 기다리고 있습니다.`;
+
+                document.getElementById('res-reply-1').innerText = 
+                    `"아까 그렇게 말하니까 나도 마음이 많이 안 좋았어. 너를 무시하려던 게 절대 아닌데 오해가 생긴 것 같아 미안해. 우리 기분 풀고 다시 얘기하자."`;
+                document.getElementById('res-reply-2').innerText = 
+                    `"네가 속상했던 부분은 이해하는데, 내 의도는 그런 뜻이 아니었어. 서로 자존심 세우지 말고 솔직하게 대화해봤으면 좋겠어."`;
+                document.getElementById('res-reply-3').innerText = 
+                    `"지금 둘 다 감정적이어서 나중에 얘기하는 게 좋을 것 같아. 나한테 너 중요한 친구니까 시간 지나고 편할 때 연락줘!"`;
+
             } else {
-                // Simulate deep loading delay for authenticity
-                setTimeout(() => {
-                    runFallbackSimulation();
-                }, 1800);
+                document.getElementById('res-real-meaning').innerText = 
+                    `상대방의 "${targetWords}"라는 말 속에는 현재 본인의 상황이나 감정이 수용받지 못했다는 '답답함'이 들어있습니다. 공격적인 어조 뒤에는 소통의 한계와 감정적 지침이 숨어 있습니다.`;
+
+                document.getElementById('res-reply-1').innerText = 
+                    `"그렇게 느끼게 했다면 미안해. 서로 생각하는 방식이 달라서 생긴 문제 같아. 내 뜻은 너를 해치려던 게 아니었어."`;
+                document.getElementById('res-reply-2').innerText = 
+                    `"상대방의 입장도 충분히 이해하지만, 제 의도와 다르게 받아들여진 것 같아 마음이 무겁네요. 편하실 때 오해를 풀고 싶습니다."`;
+                document.getElementById('res-reply-3').innerText = 
+                    `"서로에게 더 상처가 되기 전에 잠시 냉정해질 시간이 필요한 것 같습니다. 마음이 가라앉으시면 다시 소통해요."`;
             }
         }
 
-        // Gemini API Execution
-        async function fetchGeminiAnalysis() {
-            const prompt = `
-당신은 학생들의 심리적 갈등을 깊이 있게 다루는 전문 심리상담사이자 대화 컨설턴트입니다.
-상투적이거나 웃기거나 유치하지 않고, 무겁고 현실적이며 깊은 진정성을 갖고 답변해 주세요.
-
-[상황 정보]
-- 관계: ${getRelationLabel(state.relation)}
-- 갈등 배경: ${state.situation}
-- 상대방의 말/행동: "${state.targetSpeech}"
-- 내 감정: ${state.emotions.join(', ') || '복잡하고 상처받음'}
-- 내가 바라는 점: ${state.myGoal || '서로 오해를 풀고 마음이 편해지는 것'}
-
-다음 JSON 형식으로만 엄격하게 답변해 주세요:
-{
-  "empathy": "학생의 상처받은 마음과 억울함을 깊이 공감하는 3-4문장의 따뜻한 위로",
-  "defenseMechanism": "상대방이 보인 주요 심리적 방어기제 한 단어 명칭 (예: 투사 및 거절 공포)",
-  "hiddenMind": "상대방이 왜 그런 날카로운 말을 했는지에 대한 심리학적 분석 및 속마음 해독 (3-4문장)",
-  "optionA": "공감 & 부드러운 사과형 대화 메시지 예시",
-  "optionB": "솔직한 감정표현 & 경계설정형 대화 메시지 예시",
-  "optionC": "부담 없는 대화 재요청형 대화 메시지 예시"
-}
-`;
-
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${state.apiKey}`;
-            
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: { responseMimeType: "application/json" }
-                })
-            });
-
-            if (!response.ok) throw new Error('API request failed');
-
-            const data = await response.json();
-            const text = data.candidates[0].content.parts[0].text;
-            const parsed = JSON.parse(text);
-
-            renderResults(parsed);
+        function chooseDirection(type) {
+            if (type === 'send') {
+                showToast("추천 답장 중 하나를 복사해서 상대방에게 전달해보세요!");
+            } else {
+                showToast("감정이 가라앉은 뒤 솔직하게 대화를 시도해보세요.");
+            }
         }
 
-        // Advanced Dynamic Simulation Fallback Engine
-        function runFallbackSimulation() {
-            const rel = state.relation;
-            const speech = state.targetSpeech;
+        function resetApp() {
+            document.getElementById('target-personality').value = '';
+            document.getElementById('situation').value = '';
+            document.getElementById('target-words').value = '';
+            document.getElementById('my-feeling-detail').value = '';
+            goToStep(1);
+        }
 
-            let defense = "불안 숨기기 및 통제 욕구";
-            let empathy = "";
-            let hiddenMind = "";
-            let optA = "";
-            let optB = "";
-            let optC = "";
-
-            if (rel === 'parents') {
-                defense = "투사 및
+        // Initialize Step 1
+        selectRelation(document.querySelectorAll('.rel-btn')[0], '부모님');
+        selectEmotion(document.querySelectorAll('.emo-btn')[0], '억울하고 서운함');
+    </script>
+</body>
+</html>
